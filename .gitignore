@@ -219,3 +219,4 @@ cython_debug/
 /media/
 /vinilstore_cache/
 .idea/
+/vinilboard/fixtures/

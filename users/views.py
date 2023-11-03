@@ -23,11 +23,6 @@ class RegisterUser(SuccessMessageMixin, DataMixin, CreateView):
     success_url = reverse_lazy('login')
     success_message = 'Вы успешно зарегистрированы!'
 
-    # def form_valid(self, form):
-    #     user = form.save()
-    #     login(self.request, user)
-    #     return redirect('main')
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user_context = self.get_user_context(self.request, title='Регистрация')
