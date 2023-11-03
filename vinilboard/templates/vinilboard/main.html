@@ -1,0 +1,142 @@
+{% extends "layout/basic.html" %}
+{% load static %}
+{% load cache %}
+
+{% block content %}
+
+<div style="margin-top: 100px;" class="container text-center">
+
+    <div class="row" style="margin-top: 3em;">
+        <h1 style="font-size: 22pt; text-align: center;">Добро пожаловать в наш магазин виниловых пластинок!</h1>
+    </div>
+    <div class="row" style="margin-top: 3em;">
+        <div class="col">
+            <img style="border-radius:50px; box-shadow: 10px 10px 20px;" src="{% static 'vinilboard/store.jpg' %}" alt="store" width="600">
+        </div>
+        <div class="col" style="font-family: 'Istok Web'; font-size: 13pt; font-weight: bold; margin-top: 2em;">
+            <p>Мы рады представить вам большой ассортимент различных жанров и исполнителей.</p>
+            <p>Грампластинки – это не просто аудионоситель, это целый культурный феномен.
+                В нашем магазине вы найдете классические альбомы, а также новинки, выпущенные на виниле.
+                Наши пластинки сделаны из высококачественного винила и напечатаны
+                на профессиональном оборудовании для достижения наилучшего звука.</p>
+            <p>Мы предлагаем широкий выбор музыкальных жанров, от рока и метала до джаза и классики.
+                У нас вы можете найти как легендарные альбомы, так и те, которые только появились на рынке.
+                Наша команда профессионалов всегда готова помочь вам с выбором, чтобы вы смогли насладиться
+                любимой музыкой на виниле.</p>
+        </div>
+    </div>
+    <div class="row" style="margin-top: 8em;">
+        <div class="col" style="font-family: 'Istok Web'; font-size: 13pt; margin-top: 5em; font-weight: bold">
+            <p>Кроме того, мы предоставляем быструю и надежную доставку по всей стране.
+                Если у вас возникнут вопросы или нужна помощь с выбором, вы всегда можете обратиться к
+                нашей команде поддержки клиентов.</p>
+            <p>Спасибо за то, что выбрали наш магазин виниловых пластинок.
+                Мы надеемся, что вы найдете здесь свою любимую музыку и сможете наслаждаться звуком настоящего
+                аналогового звука.</p>
+        </div>
+        <div class="col">
+            <img style="border-radius:50px; box-shadow: 10px 10px 20px;" src="{% static 'vinilboard/store-2.jpg' %}" alt="store-2" width="600" >
+        </div>
+    </div>
+
+    <div class="row" style="margin-top: 3em;">
+        <div class="col">
+            <h1 style="font-size: 22pt; text-align: center;">Наша коллекция:</h1>
+            <img style="text-align: center; margin-top: 1em;" src="{% static 'vinilboard/icon_vinil.png' %}" alt="" width="78" height="78"/>
+            <p style="text-align: center; margin-top: 1em;"><img src="{% static 'vinilboard/arrow.png' %}" alt="" width="24" height="24"></p>
+        </div>
+    </div>
+</div>
+{% for albums in all_albums %}
+<div class="row" style="text-align: center;">
+    <a style="font-size: 22pt" href="{{ albums.0.genre.get_absolute_url }}">{{ albums.0.genre }}:</a>
+</div>
+<div class="container text-center my-3" style="margin-top: 2em;">
+    <div class="row row-cols-1 row-cols-md-3 row-cols-lg-5 g-3">
+    {% for album in albums %}
+        <div class="col">
+            <div class="card" style="background-color:#FF8E73;">
+                <a style="margin-top: 0.5em;" href="{{ album.get_absolute_url }}"><img src="{{ album.photo.url }}" class="card-img-top" alt="{{ album.slug }}"/></a>
+                <div class="card-body">
+                    <p><a style="color: white; font-size: 15pt; text-shadow: 1px 1px 1px black;"
+                       href="{{ album.get_absolute_url }}"
+                       class="card-text">{{ album.artist|truncatechars:20 }}</a></p>
+                    <p><a style="color: white; text-shadow: 1px 1px 1px black;"
+                       href="{{ album.get_absolute_url }}"
+                       class="card-text">{{ album.title|truncatechars:20 }}</a></p>
+                    <p style="color: black; font-size: 15pt; font-weight: bold" class="card-text">{{ album.price }} руб.</p>
+                    <a href="#" class="btn btn-warning">Купить</a>
+<!--                    <a style="margin-left: 30px" href="#" class="btn btn-secondary">в корзину</a>-->
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+</div>
+{% endfor %}
+
+{% cache 60 other_genres %}
+<div class="container text-center my-5">
+    <div class="row">
+       <h1 style="font-size: 22pt; text-align: center; color: #4169E1">Другие стили:</h1>
+    </div>
+    <div class="row my-3">
+        <nav>
+            {% for genre in other_genres %}
+            <a style="font-size: 15pt; font-weight: bold; margin: 10px 10px 30px" href="{{ genre.get_absolute_url }}">{{ genre }} ({{ genre.cnt }})</a>
+            {% endfor %}
+        </nav>
+    </div>
+</div>
+{% endcache %}
+
+{% endblock %}
+<!--<section>-->
+<!--        <div class="greeting">-->
+<!--            <h1 style="margin-top: 1em;">Добро пожаловать в наш магазин виниловых пластинок!</h1>-->
+<!--            <p>Мы рады представить вам большой ассортимент различных жанров и исполнителей.</p>-->
+<!--            <p>Грампластинки – это не просто аудионоситель, это целый культурный феномен.-->
+<!--                В нашем магазине вы найдете классические альбомы, а также новинки, выпущенные на виниле.-->
+<!--                Наши пластинки сделаны из высококачественного винила и напечатаны-->
+<!--                на профессиональном оборудовании для достижения наилучшего звука.</p>-->
+<!--            <p>Мы предлагаем широкий выбор музыкальных жанров, от рока и метала до джаза и классики.-->
+<!--                У нас вы можете найти как легендарные альбомы, так и те, которые только появились на рынке.-->
+<!--                Наша команда профессионалов всегда готова помочь вам с выбором, чтобы вы смогли насладиться-->
+<!--                любимой музыкой на виниле.</p>-->
+<!--            <p>Кроме того, мы предоставляем быструю и надежную доставку по всей стране.-->
+<!--                Если у вас возникнут вопросы или нужна помощь с выбором, вы всегда можете обратиться к-->
+<!--                нашей команде поддержки клиентов.</p>-->
+<!--            <p>Спасибо за то, что выбрали наш магазин виниловых пластинок.-->
+<!--                Мы надеемся, что вы найдете здесь свою любимую музыку и сможете наслаждаться звуком настоящего-->
+<!--                аналогового звука.</p>-->
+<!--        </div>-->
+<!--        <h2>Наша коллекция:</h2>-->
+<!--        <p><img class="icon" src="{% static 'vinilboard/icon_vinil.png' %}" alt="" width="78" height="78"></p>-->
+<!--        <p class="arrow"><img src="{% static 'vinilboard/arrow.png' %}" alt="" width="24" height="24"></p>-->
+
+<!--        {% for albums in all_albums %}-->
+<!--        <div class="gnr"><a href="{{ albums.0.genre.get_absolute_url }}">{{ albums.0.genre }}:</a></div>-->
+<!--        <table>-->
+<!--            <tr>-->
+<!--                {% for album in albums %}-->
+<!--            <td>-->
+<!--            <p><a class="artist" href="{{ album.artist.get_absolute_url }}">{{ album.artist.artist|truncatechars:20 }}</a></p>-->
+<!--            <p><a class="title" href="{{ album.get_absolute_url }}">{{ album.title|truncatechars:20 }}</a></p>-->
+<!--                <hr>-->
+<!--                <p><img class="image" src="{{ album.photo.url }}" alt="Обложка" width="150" height="150"></p>-->
+<!--            <p class="price">{{ album.price }} руб.</p>-->
+<!--            <a class="btn btn-warning" href="#">Купить</a>-->
+<!--            </td>-->
+<!--                {% endfor %}-->
+<!--            </tr>-->
+<!--        </table>-->
+<!--        {% endfor %}-->
+<!--        <p></p>-->
+<!--    <div class="other_genres">-->
+<!--        <h3 style="margin-left: 520px">Другие стили:</h3>-->
+<!--        {% for genre in other_genres %}-->
+<!--        <nav><a href="{{ genre.get_absolute_url }}">{{ genre }} ({{ genre.cnt }})</a></nav>-->
+<!--        {% endfor %}-->
+<!--    </div>-->
+<!--    </section>-->
+

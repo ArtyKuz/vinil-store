@@ -1,0 +1,194 @@
+{% extends "layout/basic.html" %}
+{% load static %}
+{% load custom_filters %}
+
+
+{% block content %}
+<div class="container my-3">
+  <div class="row" style="margin-top: 100px;">
+    <div class="col">
+      <img style="border-radius: 20px; box-shadow: 10px 10px 20px;" src="{{ album.photo.url }}" alt="{{ album.title }}"
+           width="320">
+    </div>
+    <div class="col my-3" style="margin-right: 520px; font-weight: bold;">
+      <p>Исполнитель: <a href="{{ album.artist.get_absolute_url }}">{{ album.artist }}</a></p>
+      <p>Альбом: {{ album.title }}</p>
+      <p>Год выпуска альбома: {{ album.year }}</p>
+      <p>Лейбл: {{ album.label }}</p>
+      <p>Стиль: <a href="{{ album.genre.get_absolute_url }}">{{ album.genre }}</a></p>
+      <p>Цена: {{ album.price }} руб.</p>
+        {% if avg_mark %}
+        <p>Оценка: {{ avg_mark|multiply:"⭐" }} ({{ avg_mark }})</p>
+        {% else %}
+         <p>Оценка: -</p>
+        {% endif %}
+        {% if album.in_stock > 0 %}
+        <p>В наличии: {{ album.in_stock }} шт.</p>
+        {% if user.is_authenticated %}
+            <div class="row">
+                {% if like %}
+                <div class="col">Альбом в списке избранных: <a href="{% url 'add_to_favorite' album.id 0 %}" >
+                    <img src="{% static 'vinilboard/icons8-лайк-с-заливкой-48.png' %}" width="25"></a>
+                </div>
+                {% else %}
+                <div class="col">Добавить в избранное: <a href="{% url 'add_to_favorite' album.id 1 %}" >
+                    <img src="{% static 'vinilboard/icons8-лайк-с-заливкой-64.png' %}" width="25"></a>
+                </div>
+                {% endif %}
+            </div>
+        <div class="container">
+            <div class="row my-5">
+                <div class="col">
+                    <a href="#" class="btn btn-warning">Купить</a>
+                </div>
+                <div class="col" style="word-spacing: 10px; font-size: 16pt;">
+                    <a href="{% url 'cart' %}"><img src="{% static 'vinilboard/корзина-64.png' %}" width="34"></a>
+
+                    <a href="{% url 'add_to_cart' album.slug 1 %}"><img src="{% static 'vinilboard/icon-plus.png' %}" width="20"></a>
+                    {% if user_cart > 0 %}
+                    {{ user_cart }}
+                    <a href="{% url 'add_to_cart' album.slug 0 %}"><img src="{% static 'vinilboard/icon-minus.png' %}" width="20"></a>
+                    {% else %}
+                    {{ user_cart }}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        {% else %}
+        <p style="margin-top: 40px; word-spacing: 80px"><a href="#" class="btn btn-warning">Купить</a></p>
+        {% endif %}
+
+        {% else %}
+        <p>Нет в наличии</p>
+        {% endif %}
+
+    </div>
+  </div>
+</div>
+
+{% if comments %}
+<div class="container text-center my-4">
+    <hr style="height: 5px; background: linear-gradient(45deg, #FF0000, #FF7373);">
+    <h4>Отзывы о пластинке:</h4>
+    <table class="table table-bordered" style="border-radius: 0px; margin-top: 30px;">
+        <tbody>
+        {% for comment in page_obj %}
+        <tr>
+            <td style="border: 5px solid #dddddd;">{{ comment.date_create|date:"d.m.Y" }} <br>
+                <img width="75" height="75"
+                         src="{% if user.profile.image %} {{ user.profile.image.url }}
+                         {% else %} {% static 'users/default_avatar.jpg' %} {% endif %}"
+                         class="img-thumbnail"><br>{{ comment.user }}</td>
+            <td style="width: 1px; text-align: left; border: 5px solid #dddddd;">
+                <b>Оценка:</b> {{ comment.mark|multiply:"⭐" }}<br><br><i>{{ comment.content }}</i></td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% if page_obj.has_other_pages %}
+    <div class="container text-center my-3">
+        <nav style="padding-left: 43%; ">
+        <ul class="pagination" >
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.previous_page_number }}" style="color: black">&laquo;</a>
+        </li>
+        {% endif %}
+        {% for p in paginator.page_range %}
+            {% if page_obj.number == p %}
+            <li class="page-item"><a style="color: black; background-color:#FF8E73" class="page-link" href="#"><b>{{ p }}</b></a></li>
+            {% elif p >= page_obj.number|add:-2 and p <= page_obj.number|add:2  %}
+                <li class="page-item">
+                    <a style="color: black" class="page-link" href="?page={{ p }}">{{ p }}</a>
+                </li>
+            {% endif %}
+        {% endfor %}
+        {% if page_obj.has_next %}
+        <li class="page-item">
+            <a style="color: black" class="page-link" href="?page={{ page_obj.next_page_number }}">&raquo;</a>
+        </li>
+        {% endif %}
+        </ul>
+    </nav>
+</div>
+{% endif %}
+
+
+
+<!--    <hr style="height: 2px; background: linear-gradient(45deg, #FF0000, #FF7373);">-->
+<!--   {% for comment in comments %}-->
+<!--    <p>{{ comment.date_create|date }} - {{ comment.user }}</p>-->
+<!--    <p>{{ comment.content }}</p>-->
+<!--    <hr style="height: 2px; background: linear-gradient(45deg, #FF0000, #FF7373);">-->
+<!--    {% endfor %}-->
+<!--</div>-->
+{% else %}
+<div class="container text-center my-5" style="margin-top: 2em;">
+    <hr style="height: 5px; background: linear-gradient(45deg, #FF0000, #FF7373);">
+    <h4>Отзывов нет...</h4>
+</div>
+{% endif %}
+
+{% if user.is_authenticated %}
+<div class="container text-center my-5" style="margin-top: 2em;">
+    <form action="{% url 'album' album.slug %}" method="POST">
+                    {% csrf_token %}
+                    {{ comment_form.as_p }}
+                    <button style="margin-left: 90%; background-color: #FF8E73; color: black; border-color: black; font-weight: bold;"
+                            class="btn btn-outline-success" type="submit">Оставить отзыв</button>
+
+    </form>
+</div>
+{% endif %}
+
+{% if other_releases %}
+
+<div class="container text-center">
+    <hr style="height: 5px; background: linear-gradient(45deg, #FF0000, #FF7373);">
+    <div class="row" style="margin-top: 2em;">
+        <div class="col">
+            <h1 style="font-size: 22pt; text-align: center;">Другие альбомы этого исполнителя:</h1>
+        </div>
+    </div>
+</div>
+<div class="container text-center my-5" style="margin-top: 2em;">
+    <div class="row row-cols-1 row-cols-md-3 row-cols-lg-5 g-3">
+    {% for al in other_releases %}
+        <div class="col">
+            <div class="card" style="background-color:#FF8E73;">
+                <a style="margin-top: 0.5em;" href="{{ al.get_absolute_url }}"><img src="{{ al.photo.url }}" class="card-img-top" alt="{{ al.slug }}"/></a>
+                <div class="card-body">
+                    <p><a style="color: white; font-size: 15pt; text-shadow: 1px 1px 1px black;"
+                       href="{{ al.get_absolute_url }}"
+                       class="card-text">{{ al.artist|truncatechars:20 }}</a></p>
+                    <p><a style="color: white; text-shadow: 1px 1px 1px black;"
+                       href="{{ al.get_absolute_url }}"
+                       class="card-text">{{ al.title|truncatechars:20 }}</a></p>
+                    <p style="color: black; font-size: 15pt; font-weight: bold" class="card-text">{{ al.price }} руб.</p>
+                    <a href="#" class="btn btn-warning">Купить</a>
+<!--                    <a style="margin-left: 30px" href="#" class="btn btn-secondary">в корзину</a>-->
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+<!--<div class="card mb-3" style="width: 600px;">-->
+<!--  <div class="row g-0">-->
+<!--    <div class="col">-->
+<!--      <img src="{{ album.photo.url }}" class="img-fluid rounded-start" alt="...">-->
+<!--    </div>-->
+<!--    <div class="col-md-8">-->
+<!--      <div class="card-body">-->
+<!--        <h5 class="card-text">Исполнитель: {{ album.artist }}</h5>-->
+<!--        <p class="card-text">Альбом: {{ album.title }}</p>-->
+<!--        <p class="card-text"></p>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </div>-->
+<!--</div>-->
+
+

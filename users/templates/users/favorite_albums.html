@@ -1,0 +1,43 @@
+{% extends "layout/basic.html" %}
+{% load static %}
+{% load users_tags %}
+
+{% block content %}
+
+<div class="row" style="margin-top: 6em">
+    {% profile_menu title %}
+
+
+{% if favorite_albums %}
+<div class="col">
+<div class="container text-center my-3">
+    <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-3" style="margin-left:1em; margin-right:3em">
+        {% for album in favorite_albums %}
+        <div class="col ">
+            <div class="card" style="background-color:#FF8E73;">
+                <a style="margin-top: 0.5em;" href="{{ album.album.get_absolute_url }}"><img src="{{ album.album.photo.url }}" class="card-img-top" alt="{{ album.album.slug }}"/></a>
+                <div class="card-body">
+                    <p><a style="color: white; font-size: 15pt; text-shadow: 1px 1px 1px black;"
+                       href="{{ album.album.get_absolute_url }}"
+                       class="card-text">{{ album.album.artist.artist|truncatechars:20 }}</a></p>
+                    <p><a style="color: white; text-shadow: 1px 1px 1px black;"
+                       href="{{ album.album.get_absolute_url }}"
+                       class="card-text">{{ album.album.title|truncatechars:20 }}</a></p>
+                    <p style="color: black; font-size: 15pt; font-weight: bold" class="card-text">{{ album.album.price }} руб.</p>
+                     <a href="#" class="btn btn-warning">Купить</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+    </div>
+</div>
+
+
+    {% else %}
+    <div class="col text-center">
+        <p style="font-size: 20pt;">Вы еще не добавили ни одного альбома в избранное...</p>
+        <p style="margin-top: 1em;" ><a style="margin-top: 1em;" href="{% url 'catalog' %}" class="btn btn-warning">Перейти в каталог</a></p>
+    </div>
+    {% endif %}
+{% endblock %}

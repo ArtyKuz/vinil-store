@@ -1,0 +1,51 @@
+{% extends "layout/basic.html" %}
+{% load static %}
+
+
+{% block content %}
+<div style="margin-top: 100px;" class="container text-center">
+    <div class="row" style="margin-top: 3em;">
+        <div class="col">
+            <h1 style="font-size: 22pt; text-align: center;">{{ page_obj.0.genre }}:</h1>
+        </div>
+    </div>
+</div>
+<div class="container text-center my-3" style="margin-top: 2em;">
+    <div class="row row-cols-1 row-cols-md-3 row-cols-lg-5 g-3">
+        {% for album in page_obj %}
+        <div class="col">
+            <div class="card" style="background-color:#FF8E73;">
+                <a href="{{ album.get_absolute_url }}"><img src="{{ album.photo.url }}" class="card-img-top" alt="{{ album.slug }}"/></a>
+                <div class="card-body">
+                    <p><a style="color: white; font-size: 15pt; text-shadow: 1px 1px 1px black;"
+                       href="{{ album.get_absolute_url }}"
+                       class="card-text">{{ album.artist|truncatechars:18 }}</a></p>
+                    <p><a style="color: white; text-shadow: 1px 1px 1px black;"
+                       href="{{ album.get_absolute_url }}"
+                       class="card-text">{{ album.title|truncatechars:18 }}</a></p>
+                    <p style="color: black; font-size: 15pt; font-weight: bold" class="card-text">{{ album.price }} руб.</p>
+                    <a href="#" class="btn btn-warning">Купить</a>
+<!--                    <a style="margin-left: 30px" href="#" class="btn btn-secondary">в корзину</a>-->
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% include 'vinilboard/pagination.html' %}
+{% endblock %}
+
+{% block other_genres %}
+<div class="container text-center my-5">
+    <div class="row">
+       <h1 style="font-size: 22pt; text-align: center; color: #4169E1">Другие стили:</h1>
+    </div>
+    <div class="row my-3">
+        <nav>
+            {% for genre in other_genres %}
+            <a style="font-size: 14pt; font-weight: bold; margin: 10px 10px 30px" href="{{ genre.get_absolute_url }}">{{ genre }} ({{ genre.cnt }})</a>
+            {% endfor %}
+        </nav>
+    </div>
+</div>
+{% endblock %}

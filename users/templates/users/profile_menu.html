@@ -1,0 +1,15 @@
+
+        <div class="col-5" style="margin-left: 1em; width: 20%">
+            <div class="list-group" style="margin-left: 1em;">
+        {% for item in menu %}
+            {% if item.name == title %}
+            <a href="#" class="list-group-item list-group-item-action active" aria-current="true"
+                 style="background-color: #0AE7FF; color: black; border-color: #C1D2D4; border-width:2px">
+                {{ item.name }}
+              </a>
+            {% else %}
+            <a href="{% url item.url %}" class="list-group-item list-group-item-action">{{ item.name }}</a>
+            {% endif %}
+        {% endfor %}
+        </div>
+        </div>
