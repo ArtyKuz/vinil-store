@@ -1,10 +1,11 @@
 from http import HTTPStatus
 
+from django.db.models import Q
 from django.test import TestCase
 from django.urls import reverse
 
 from vinilboard.forms import SearchForm
-from vinilboard.models import Genre, Album
+from vinilboard.models import Genre, Album, Artist
 
 
 class MainPageTestCase(TestCase):
@@ -66,7 +67,6 @@ class AlbumTestCase(TestCase):
 
     def test_album(self):
         album = Album.objects.all().first()
-        other_albums = Album.objects.filter(artist=album.artist).exclude(slug=album.slug)
         path = reverse('album', args=[album.slug])
         response = self.client.get(path)
 
@@ -76,4 +76,40 @@ class AlbumTestCase(TestCase):
         self.assertIn('search_form', response.context_data)
 
         self.assertEqual(response.context_data['album'], album)
-        self.assertQuerysetEqual(response.context_data['other_releases'], other_albums)
+        self.assertNotIn(album, response.context_data['other_releases'])
+
+
+class ArtistTestCase(TestCase):
+    fixtures = ['vinilboard_album.json', 'vinilboard_artist.json', 'vinilboard_genre.json']
+
+    def test_artist(self):
+        artist = Artist.objects.all().first()
+        albums = Album.objects.filter(artist=artist)
+        path = reverse('artist', args=[artist.slug])
+        response = self.client.get(path)
+        self.assertTemplateUsed(response, 'vinilboard/artist.html')
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertEqual(response.context_data['title'], artist)
+        self.assertIn('search_form', response.context_data)
+
+        self.assertQuerysetEqual(response.context_data['albums'], albums)
+
+
+class SearchTestCase(TestCase):
+    fixtures = ['vinilboard_album.json', 'vinilboard_artist.json', 'vinilboard_genre.json']
+
+    def test_search(self):
+        keyword = 'Pink Floyd'
+        data = {'keyword': keyword}
+        albums = Album.objects.filter(Q(title__icontains=keyword) | Q(artist__artist__icontains=keyword))
+        path = reverse('search')
+        response = self.client.post(path, data)
+
+        self.assertTemplateUsed(response, 'vinilboard/search.html')
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertEqual(response.context['title'], 'Поиск')
+        self.assertIn('search_form', response.context)
+
+        self.assertQuerysetEqual(response.context['page_obj'], albums)
+
+
