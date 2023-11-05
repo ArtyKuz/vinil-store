@@ -1,0 +1,71 @@
+{% extends "layout/basic.html" %}
+{% load static %}
+{% load users_tags %}
+
+{% block content %}
+<div class="container text-center">
+    <div class="row" style="margin-top: 6em; margin-left:6em">
+
+        <div class="col">
+            <h4 class="mt-3 mb-3">Оформление заказа:</h4>
+                    <div class="row">
+                        <div class="col" style="margin-top:3em">
+                            <p>Получатель заказа: {{ user.first_name }} {{ user.last_name }}</p>
+                        </div>
+                    </div>
+            <form action="{% url 'order_create' %}" method="post" style="margin-top:0em">
+                {% csrf_token %}
+
+                <div class="form-row">
+                    <div class="col">
+                            <label class="small mb-1" for="{{ form.address.id_for_label }}">{{ form.address.label }}</label>
+                            {{ form.address }}
+                    </div>
+                </div>
+                 <div class="col-lg-12" style="margin-top: 33px;">
+                    <input class="btn btn-info btn-block" type="submit" value="Оформить">
+                 </div>
+            </form>
+        </div>
+        <div class="col">
+            <div class="container text-center">
+                 <h4 class="mt-3 mb-3">Пластинки:</h4>
+                <table class="table table-bordered" style="margin-top:3em; border-radius: 0px; margin-top: 30px; ">
+                    <thead>
+                    <tr>
+                        <td style="border: 2px solid #FFC1CE; background-color: #ECECEC; font-weight: bold" >Название</td>
+                        <td style="border: 2px solid #FFC1CE; background-color: #ECECEC; font-weight: bold ">Количество</td>
+                        <td style="border: 2px solid #FFC1CE; background-color: #ECECEC; font-weight: bold">Цена</td>
+                    </tr>
+                    </thead>
+
+                {% for item in user_cart %}
+                    <tr>
+                        <td style="border: 2px solid #FFC1CE; background-color: #ECECEC">{{ item.album.artist }} - {{ item.album }}</td>
+                        <td style="border: 2px solid #FFC1CE; background-color: #ECECEC">{{ item.quantity }}</td>
+                        <td style="border: 2px solid #FFC1CE; background-color: #ECECEC">{{ item.album.price }}</td>
+                    </tr>
+                {% endfor %}
+                </table>
+            </div>
+        </div>
+
+
+{% endblock %}
+
+<!--<div class="container text-center my-5">-->
+<!--    <div class="row">-->
+<!--        <div class="col">-->
+<!--            <img src="{% static 'vinilboard/icons8-стрелка.png' %}" width="64" alt="стрелка">-->
+<!--            <p><a style="margin-top: 2em; background-color: #FFA500; color: black" href="#" class="btn">Личные данные</a></p>-->
+<!--        </div>-->
+<!--        <div class="col">-->
+<!--            <img src="{% static 'vinilboard/icons8-стрелка.png' %}" width="64" alt="стрелка">-->
+<!--            <p><a style="margin-top: 2em; background-color: #FFA500; color: black" href="#" class="btn">Мои заказы</a></p>-->
+<!--        </div>-->
+<!--        <div class="col">-->
+<!--            <img src="{% static 'vinilboard/icons8-стрелка.png' %}" width="64" alt="стрелка">-->
+<!--            <p><a style="margin-top: 2em; background-color: #FFA500; color: black"-->
+<!--                  href="{% url 'cart' user %}" class="btn">Корзина</a></p>-->
+<!--        </div>-->
+<!--    </div>-->
