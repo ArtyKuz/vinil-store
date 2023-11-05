@@ -41,3 +41,12 @@ class RegisterUserTestCase(TestCase):
 
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertContains(response, 'Пользователь с таким именем уже существует')
+
+    def test_user_registration_email_error(self):
+        user_model = get_user_model()
+        user_model.objects.create(username='qwerty', email=self.data['email'])
+        path = reverse('register')
+        response = self.client.post(path, self.data)
+
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertContains(response, 'Пользователь с таким e-mail уже зарегистрирован')
