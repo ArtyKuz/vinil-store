@@ -43,9 +43,10 @@ class Album(models.Model):
     year = models.IntegerField(verbose_name='Год выпуска')
     label = models.CharField(max_length=100, verbose_name='Лэйбл')
     genre = models.ForeignKey(Genre, on_delete=models.PROTECT, verbose_name='Стиль', related_name='albums')
-    price = models.IntegerField(verbose_name='Цена')
+    price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Цена')
     photo = models.ImageField(upload_to='photos/', verbose_name='Обложка')
     in_stock = models.PositiveIntegerField(default=0, verbose_name='В наличии')
+
     # orders = models.ManyToManyField('Order', through='OrderAlbum', blank=True)
 
     class Meta:
@@ -61,21 +62,6 @@ class Album(models.Model):
 
     def get_comments(self):
         return Comment.objects.filter(album=self).select_related('user')
-
-
-class Order(models.Model):
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, verbose_name='Клиент')
-    order_albums = models.ManyToManyField(Album, verbose_name='Альбомы', related_name='orders')
-    shipping_address = models.CharField(max_length=200, verbose_name='Адрес доставки')
-    total_amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Сумма заказа')
-    date_created_order = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания заказа')
-
-    def __str__(self):
-        return f'Заказ № {self.pk}'
-
-    class Meta:
-        verbose_name_plural = 'Заказы'
-        verbose_name = 'Заказ'
 
 
 # class OrderAlbum(models.Model):
@@ -105,9 +91,3 @@ class Comment(models.Model):
     album = models.ForeignKey(Album, on_delete=models.CASCADE, related_name='comments')
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comments')
     date_create = models.DateTimeField(auto_now_add=True)
-
-
-
-
-
-
