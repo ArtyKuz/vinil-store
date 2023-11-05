@@ -220,3 +220,4 @@ cython_debug/
 /vinilstore_cache/
 .idea/
 /vinilboard/fixtures/
+/orders/migrations/
