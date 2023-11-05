@@ -30,9 +30,11 @@ urlpatterns = [
     path('catalog/', include('vinilboard.urls')),
     path('contact/', ContactFormView.as_view(), name='contact'),
     path('users/', include('users.urls')),
+    path('orders/', include('orders.urls')),
     path('api/', include('api.urls')),
     path('social-auth/', include('social_django.urls', namespace='social')),
     path('captcha/', include('captcha.urls')),
+
 ]
 
 

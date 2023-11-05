@@ -47,6 +47,7 @@ INSTALLED_APPS = [
 
     'vinilboard',
     'users',
+    'orders',
     'api',
 ]
 
