@@ -42,9 +42,7 @@ class GenreAdmin(admin.ModelAdmin):
     ordering = ('genre',)
 
 
-class OrderAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user', 'shipping_address', 'total_amount', 'date_created_order')
-    filter_horizontal = ('order_albums',)
+
 
 
 
@@ -52,4 +50,4 @@ class OrderAdmin(admin.ModelAdmin):
 admin.site.register(Album, AlbumAdmin)
 admin.site.register(Artist, ArtistAdmin)
 admin.site.register(Genre, GenreAdmin)
-admin.site.register(Order, OrderAdmin)
+# admin.site.register(Order, OrderAdmin)
