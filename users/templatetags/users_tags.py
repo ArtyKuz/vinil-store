@@ -7,7 +7,7 @@ register = template.Library()
 def profile_menu(title=None):
     menu = [
         {'name': 'Профиль', 'url': 'profile'},
-        {'name': 'Мои заказы', 'url': 'orders'},
+        {'name': 'Мои заказы', 'url': 'user_orders'},
         {'name': 'Избранные пластинки', 'url': 'favorites'},
         {'name': 'Корзина', 'url': 'cart'}
     ]

@@ -1,0 +1,50 @@
+{% extends "layout/basic.html" %}
+{% load static %}
+{% load users_tags %}
+
+{% block content %}
+
+<div class="row" style="margin-top: 6em">
+    {% profile_menu title %}
+
+
+{% if orders %}
+<div class="col">
+<div class="container text-center my-3">
+    <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-3" style="margin-left:1em; margin-right:3em">
+        <h4>Ваши заказы:</h4>
+        <table class="table" style="border-radius: 0px">
+            <thead>
+                <tr>
+                    <td scope="col" style="font-weight:bold; border: 3px solid #FFC1CE;">Номер заказа</td>
+                    <td scope="col" style="font-weight:bold; border: 3px solid #FFC1CE;">Адрес доставки</td>
+                    <td scope="col" style="font-weight:bold; border: 3px solid #FFC1CE;">Дата заказа</td>
+                    <td scope="col" style="font-weight:bold; border: 3px solid #FFC1CE;">Сумма заказа</td>
+                    <td scope="col" style="font-weight:bold; border: 3px solid #FFC1CE;">Статус заказа</td>
+                </tr>
+            </thead>
+            <tbody>
+            {% for order in orders %}
+            <tr>
+                <td style="border: 3px solid #FFC1CE;">{{ order.id }}</td>
+                <td style="border: 3px solid #FFC1CE;">{{ order.address }}</td>
+                <td style="border: 3px solid #FFC1CE;">{{ order.created|date }}</td>
+                <td style="border: 3px solid #FFC1CE;">{{ order.total_price}} руб.</td>
+                <td style="border: 3px solid #FFC1CE;">{{ order.get_status_display }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+</div>
+</div>
+
+{% else %}
+<div class="col text-center">
+        <p style="font-size: 20pt;">Вы еще не совершили ни одного заказа...</p>
+        <p style="margin-top: 1em;" ><a style="margin-top: 1em;" href="{% url 'catalog' %}" class="btn btn-warning">Перейти в каталог</a></p>
+</div>
+{% endif %}
+
+{% endblock %}

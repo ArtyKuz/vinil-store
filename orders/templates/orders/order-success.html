@@ -1,0 +1,11 @@
+{% extends "layout/basic.html" %}
+
+
+{% block content %}
+<div class="container text-center" style="margin-top: 6em">
+    <h4>Заказ успешно оформлен!</h4>
+    <br>
+    <p>Посмотреть статус заказа можно в <a href="{% url 'user_orders' %}">Истории заказов</a></p>
+
+</div>
+{% endblock %}

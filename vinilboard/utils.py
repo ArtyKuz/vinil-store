@@ -6,10 +6,13 @@ from .models import *
 
 
 class DataMixin:
+    title = None
 
-    def get_user_context(self, request, **kwargs):
-        context = kwargs
-        if 'users' not in request.path:
+    def get_context_data(self, request, **kwargs):
+        context: dict = super().get_context_data(**kwargs)
+        context.setdefault('title', self.title)
+
+        if 'users' not in request.path and 'orders' not in request.path:
             context['search_form'] = SearchForm()
 
         return context
@@ -17,8 +20,8 @@ class DataMixin:
 
 class SearchMixin(DataMixin):
 
-    def get_user_context(self, keyword, request, **kwargs):
-        context = super().get_user_context(request, **kwargs)
+    def get_context_data(self, keyword, request, **kwargs):
+        context = super().get_context_data(request, **kwargs)
         albums = Album.objects.filter(
             Q(title__icontains=keyword) | Q(artist__artist__icontains=keyword)).select_related('artist')
         paginator = Paginator(albums, per_page=25)
@@ -33,8 +36,8 @@ class SearchMixin(DataMixin):
 
 class CommentMixin(DataMixin):
 
-    def get_user_context(self, request, album: Album):
-        context = super().get_user_context(request, title=album)
+    def get_context_data(self, request, album: Album, **kwargs):
+        context = super().get_context_data(request, title=album)
         comments = album.get_comments()
         if request.user.is_authenticated:
             context['comment_form'] = CommentForm()

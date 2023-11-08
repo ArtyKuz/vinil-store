@@ -22,25 +22,25 @@ class RegisterUser(SuccessMessageMixin, DataMixin, CreateView):
     template_name = 'users/register.html'
     success_url = reverse_lazy('login')
     success_message = 'Вы успешно зарегистрированы!'
+    title = 'Регистрация'
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        user_context = self.get_user_context(self.request, title='Регистрация')
-        context.update(user_context)
+        context = super().get_context_data(self.request, **kwargs)
+
         return context
 
 
 class LoginUser(DataMixin, LoginView):
     form_class = LoginUserForm
     template_name = 'users/login.html'
+    title = 'Вход'
 
     def get_success_url(self):
         return reverse_lazy('profile')
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        user_context = self.get_user_context(self.request, title='Вход')
-        context.update(user_context)
+        context = super().get_context_data(self.request, **kwargs)
+
         return context
 
 
@@ -54,6 +54,7 @@ class UserProfileView(LoginRequiredMixin, DataMixin, UpdateView):
     form_class = UserProfileForm
     template_name = 'users/profile.html'
     login_url = 'login'
+    title = 'Профиль'
 
     def get_success_url(self):
         return reverse_lazy('profile')
@@ -62,9 +63,7 @@ class UserProfileView(LoginRequiredMixin, DataMixin, UpdateView):
         return self.request.user
 
     def get_context_data(self, *, object_list=None, **kwargs):
-        context = super().get_context_data(**kwargs)
-        user_context = self.get_user_context(self.request, title='Профиль')
-        context.update(user_context)
+        context = super().get_context_data(self.request, **kwargs)
         context['image_form'] = ImageForm
 
         return context
@@ -75,15 +74,14 @@ class UserCart(LoginRequiredMixin, DataMixin, ListView):
     template_name = 'users/cart.html'
     context_object_name = 'user_cart'
     login_url = 'login'
+    title = 'Корзина'
 
     def get_queryset(self):
         return CartItem.objects.filter(user=self.request.user).select_related('album', 'album__artist').annotate(
             sum=F('quantity') * F('album__price'))
 
     def get_context_data(self, *, object_list=None, **kwargs):
-        context = super().get_context_data(**kwargs)
-        user_context = self.get_user_context(self.request, title='Корзина')
-        context.update(user_context)
+        context = super().get_context_data(self.request, **kwargs)
         order_price = self.object_list.aggregate(order_price=Sum('sum'))
         context.update(order_price)
 
@@ -126,14 +124,13 @@ class UserFavorites(DataMixin, ListView):
     model = FavoriteAlbums
     template_name = 'users/favorite_albums.html'
     context_object_name = 'favorite_albums'
+    title = 'Избранные пластинки'
 
     def get_queryset(self):
         return FavoriteAlbums.objects.select_related('album').filter(user=self.request.user)
 
     def get_context_data(self, *, object_list=None, **kwargs):
-        context = super().get_context_data(**kwargs)
-        user_context = self.get_user_context(self.request, title='Избранные пластинки')
-        context.update(user_context)
+        context = super().get_context_data(self.request, **kwargs)
 
         return context
 

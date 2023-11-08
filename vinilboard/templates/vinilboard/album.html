@@ -71,16 +71,16 @@
 <div class="container text-center my-4">
     <hr style="height: 5px; background: linear-gradient(45deg, #FF0000, #FF7373);">
     <h4>Отзывы о пластинке:</h4>
-    <table class="table table-bordered" style="border-radius: 0px; margin-top: 30px;">
+    <table class="table table-bordered" style="border-radius: 0px; margin-top: 30px; ">
         <tbody>
         {% for comment in page_obj %}
         <tr>
-            <td style="border: 5px solid #dddddd;">{{ comment.date_create|date:"d.m.Y" }} <br>
+            <td style="border: 5px solid #FFC1CE; background-color: #ECECEC">{{ comment.date_create|date:"d.m.Y" }} <br>
                 <img width="75" height="75"
-                         src="{% if user.profile.image %} {{ user.profile.image.url }}
+                         src="{% if comment.user.profile.image %} {{ comment.user.profile.image.url }}
                          {% else %} {% static 'users/default_avatar.jpg' %} {% endif %}"
                          class="img-thumbnail"><br>{{ comment.user }}</td>
-            <td style="width: 1px; text-align: left; border: 5px solid #dddddd;">
+            <td style="width: 1px; text-align: left; border: 5px solid #FFC1CE; background-color: #ECECEC">
                 <b>Оценка:</b> {{ comment.mark|multiply:"⭐" }}<br><br><i>{{ comment.content }}</i></td>
         </tr>
         {% endfor %}

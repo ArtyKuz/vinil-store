@@ -7,7 +7,7 @@ from django.core.paginator import Paginator
 from django.db.models import *
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
-from django.views.generic import ListView, CreateView, View, DetailView, FormView
+from django.views.generic import ListView, CreateView, View, DetailView, FormView, TemplateView
 
 from users.models import FavoriteAlbums
 from .forms import AddAlbumForm, SearchForm, CommentForm, ContactForm
@@ -17,14 +17,13 @@ from .utils import DataMixin, SearchMixin, CommentMixin
 
 class MainPage(DataMixin, ListView):
     template_name = 'vinilboard/main.html'
+    title = 'Главная страница'
 
     def get_queryset(self):
         return Genre.objects.annotate(cnt=Count('albums')).order_by('pk')
 
     def get_context_data(self, *, object_list=None, **kwargs):
-        context = super().get_context_data(**kwargs)
-        user_context = self.get_user_context(self.request, title='Главная страница')
-        context.update(user_context)
+        context = super().get_context_data(self.request, **kwargs)
         all_albums = [list(Album.objects.filter(genre__genre=genre.genre).select_related('artist', 'genre'))
                       for genre in self.object_list[:4]]
         for ind, val in enumerate(all_albums):
@@ -39,6 +38,7 @@ class MainPage(DataMixin, ListView):
 class ShowCatalog(DataMixin, ListView):
     paginate_by = 25
     template_name = 'vinilboard/catalog.html'
+    title = 'Каталог'
 
     def get_queryset(self):
         catalog = cache.get('catalog')
@@ -48,9 +48,7 @@ class ShowCatalog(DataMixin, ListView):
         return catalog
 
     def get_context_data(self, *, object_list=None, **kwargs):
-        context = super().get_context_data(**kwargs)
-        user_context = self.get_user_context(self.request, title='Каталог')
-        context.update(user_context)
+        context = super().get_context_data(self.request, **kwargs)
 
         return context
 
@@ -68,9 +66,7 @@ class ShowGenre(DataMixin, ListView):
         return genre
 
     def get_context_data(self, *, object_list=None, **kwargs):
-        context = super().get_context_data(**kwargs)
-        user_context = self.get_user_context(self.request, title=self.object_list[0].genre)
-        context.update(user_context)
+        context = super().get_context_data(self.request, title=self.object_list[0].genre, **kwargs)
         context['other_genres'] = Genre.objects.exclude(slug=self.kwargs['genre']).annotate(cnt=Count('albums'))
         return context
 
@@ -84,9 +80,7 @@ class ShowAlbum(CommentMixin, DetailView):
         return get_object_or_404(Album.objects.select_related('artist', 'genre'), slug=self.kwargs['album'])
 
     def get_context_data(self, *, object_list=None, **kwargs):
-        context = super().get_context_data(**kwargs)
-        user_context = self.get_user_context(self.request, self.object)
-        context.update(user_context)
+        context = super().get_context_data(self.request, self.object, **kwargs)
         context['other_releases'] = Album.objects.filter(
             artist__artist=self.object.artist).exclude(slug=self.object.slug).select_related('artist')
 
@@ -121,10 +115,8 @@ class ShowArtist(DataMixin, ListView):
         return Album.objects.filter(artist__slug=self.kwargs['artist']).select_related('artist')
 
     def get_context_data(self, *, object_list=None, **kwargs):
-        context = super().get_context_data(**kwargs)
+        context = super().get_context_data(self.request, title=self.object_list[0].artist, **kwargs)
         context['artist'] = context['albums'][0].artist
-        user_context = self.get_user_context(self.request, title=context['artist'])
-        context.update(user_context)
 
         return context
 
@@ -136,12 +128,13 @@ class AddAlbumView(PermissionRequiredMixin, LoginRequiredMixin, DataMixin, Creat
     permission_required = 'vinilboard.add_album'  # <приложение>.<действие>_<таблица>
 
 
-class Search(SearchMixin, View):
+class Search(SearchMixin, TemplateView):
+    title = 'Поиск'
 
     def get(self, request):
         if request.GET.get('page') and request.GET.get('keyword'):
             keyword = request.GET.get('keyword')
-            context = self.get_user_context(keyword, request, title='Поиск')
+            context = super().get_context_data(keyword, request)
             return render(request, 'vinilboard/search.html', context)
         else:
             return redirect('main')
@@ -150,7 +143,7 @@ class Search(SearchMixin, View):
         form = SearchForm(request.POST)  # Получение данных из POST-запроса
         if form.is_valid():
             keyword = form.cleaned_data['keyword']
-            context = self.get_user_context(keyword, request, title='Поиск')
+            context = super().get_context_data(keyword, request)
             return render(request, 'vinilboard/search.html', context)
         else:
             # Данные формы недействительны, возвращаем форму с ошибками
