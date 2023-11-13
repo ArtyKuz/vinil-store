@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     'django_extensions',
     'social_django',
     'captcha',
+    'rest_framework.authtoken',
+    'djoser',
 
     'vinilboard',
     'users',
@@ -199,4 +201,12 @@ CACHES = {
         "BACKEND": "django.core.cache.backends.redis.RedisCache",
         "LOCATION": "redis://127.0.0.1:6379",
     }
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ),
 }

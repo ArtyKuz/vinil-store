@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
 from django.views.decorators.cache import cache_page
 from rest_framework.routers import SimpleRouter
 
@@ -34,6 +34,7 @@ urlpatterns = [
     path('api/', include('api.urls')),
     path('social-auth/', include('social_django.urls', namespace='social')),
     path('captcha/', include('captcha.urls')),
+    re_path(r'^auth/', include('djoser.urls.authtoken')),
 
 ]
 
